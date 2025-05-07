@@ -1,0 +1,11 @@
+
+# localhost or network
+eureka:
+  instance:
+    hostname: localhost
+    #false so that service-registry does not register itself and wont able to fetch registry
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+server:
+  port: 8761

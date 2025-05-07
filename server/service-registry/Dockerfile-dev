@@ -1,0 +1,25 @@
+# 1. Build stage using Maven
+FROM maven:3-jdk-11 as build
+
+# Add source code to build context
+ADD ./server/service-registry /service_registry_staging
+
+WORKDIR /service_registry_staging
+
+# Optional check to ensure build context is correct
+RUN ls -l
+
+# Build the app
+RUN mvn clean install -DskipTests
+
+# 2. Runtime stage with just the jar
+FROM openjdk:11-jdk
+
+VOLUME /tmp
+
+# Copy the generated jar from build container
+COPY --from=build /service_registry_staging/target/service-registry-0.0.1-SNAPSHOT.jar service-registry.jar
+
+EXPOSE 8761
+
+CMD ["sh", "-c", "java -Dserver.port=$PORT -Dspring.profiles.active=$ACTIVE_PROFILE -jar service-registry.jar"]
